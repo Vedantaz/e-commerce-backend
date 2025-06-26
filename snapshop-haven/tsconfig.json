@@ -8,6 +8,6 @@
       "esModuleInterop": true,
       "skipLibCheck": true
     },
-    "include": ["services/**/*.ts"]
+    "include": ["services/**/*.ts", "./node_modules/@types", "./src/types"]
   }
   

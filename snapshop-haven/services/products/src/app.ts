@@ -1,6 +1,7 @@
 // services/products/src/app.ts
 import express, { Request, Response } from 'express';
 import productRoutes from './routes/product.routes'
+import '../../../shared/types/custom'
 const app = express();
 app.use(express.json());
 

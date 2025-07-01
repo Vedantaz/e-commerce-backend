@@ -1,20 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { AuthPayload } from "../types/AuthPayload";
 
-export interface AuthPayload {
-  id: string;
-  role: "admin" | "customer";
-}
 
 export const authenticateJWT = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+) : void=> {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer")) {
-    return res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Unauthorized" });
+    return;
   }
 
   const token = authHeader.split(" ")[1];

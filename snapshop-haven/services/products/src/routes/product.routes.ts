@@ -1,13 +1,22 @@
 import express, {Request, Response} from 'express';
 import {Product} from '../models/Product';
-const router = express.Router();
 import {authenticateJWT} from '../../../../shared/middleware/authMiddleware'
 import redis from '../utils/redis'
 import upload from '../middleware/upload'
+import Stripe   from 'stripe'
+import { orderQueue } from '../queues/orderQueue';
+import {} from '../../../../shared/types/custom'
 
-import Stripe from 'stripe';
-
+const router = express.Router();
 const stripe = new Stripe('sk_test_...');
+
+// now adding a job to queue
+router.post('/place-order', async(req, res)=>{
+    const orderData = req.body;
+    await orderQueue.add('send-receipts', orderData);
+
+    res.json({message:'Order received, processing... '});
+})
 
 // checkout session for the stripe
 router.post('/checkout', authenticateJWT, async (req, res) => {

@@ -7,6 +7,6 @@ const redis = new Redis({
 
 redis.on('connect', ()=>{console.log('redis connected!')});
 
-redis.on('err', (err)=>{console.log('redis disconnected', err)});
+redis.on('err', (err:any)=>{console.log('redis disconnected', err)});
 
 export default redis;

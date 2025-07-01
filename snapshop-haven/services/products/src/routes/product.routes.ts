@@ -3,10 +3,16 @@ import {Product} from '../models/Product';
 import {authenticateJWT} from '../../../../shared/middleware/authMiddleware'
 import redis from '../utils/redis'
 import upload from '../middleware/upload'
+import Stripe   from 'stripe'
+import { orderQueue } from '../queues/orderQueue';
+import {} from '../../../../shared/types/custom'
 
+<<<<<<< HEAD
 import Stripe from 'stripe';
 import { orderQueue } from '../queues/orderQueue';
 
+=======
+>>>>>>> f0995a6db353b036fe35b360724acb26d7e5aa4a
 const router = express.Router();
 const stripe = new Stripe('sk_test_...');
 

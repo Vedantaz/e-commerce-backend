@@ -4,7 +4,7 @@ import app from '../src/app'; // your Express app
 import request from 'supertest';
 
 beforeAll(async () => {
-  await mongoose.connect('mongodb://localhost:27017/test-db');
+  await mongoose.connect(process.env.MONGO_URI || '');
 });
 
 afterAll(async () => {

@@ -7,12 +7,6 @@ import Stripe   from 'stripe'
 import { orderQueue } from '../queues/orderQueue';
 import {} from '../../../../shared/types/custom'
 
-<<<<<<< HEAD
-import Stripe from 'stripe';
-import { orderQueue } from '../queues/orderQueue';
-
-=======
->>>>>>> f0995a6db353b036fe35b360724acb26d7e5aa4a
 const router = express.Router();
 const stripe = new Stripe('sk_test_...');
 
@@ -22,6 +16,28 @@ router.post('/place-order', async(req, res)=>{
     await orderQueue.add('send-receipts', orderData);
 
     res.json({message:'Order received, processing... '});
+})
+
+router.post('/create-product', authenticateJWT ,upload.single('image') ,async(req:Request, res:Response)=>{
+    try{
+        if (req.user?.role !== 'admin') {
+            res.status(403).json({ message: 'Forbidden' });
+            return;
+        }
+        const image = req.file?.path;
+        const productData = {...req.body, image};
+        console.log(image, 'image coming undefined')
+        const newProduct = new Product(productData);
+        await newProduct.save();
+
+        await redis.flushall();
+
+        res.status(201).json(newProduct);   
+
+    }catch(err){
+        console.log('Create product err', err);
+        res.status(400).json({err:"Product creation failed"});
+    }
 })
 
 // checkout session for the stripe
@@ -81,7 +97,7 @@ router.post('/',authenticateJWT, async (req:Request, res:Response) =>{
 })
 
 // get all products
-router.get('/', async(req, res) =>{
+router.get('/get-all-products', async(req, res) =>{
     // const products = await Product.find();
     // res.json(products);
 

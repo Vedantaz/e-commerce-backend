@@ -1,8 +1,7 @@
 {
   "name": "products",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon"
@@ -10,7 +9,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@types/express": "^5.0.3",
     "bullmq": "^5.56.0",
@@ -23,11 +21,8 @@
   },
   "devDependencies": {
     "@types/multer": "^1.4.13",
-<<<<<<< HEAD
-=======
     "@types/node": "^24.0.8",
     "nodemon": "^3.1.10",
->>>>>>> f0995a6db353b036fe35b360724acb26d7e5aa4a
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

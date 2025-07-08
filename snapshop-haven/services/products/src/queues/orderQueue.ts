@@ -1,9 +1,13 @@
 import {Queue} from 'bullmq';
-import { RedisOptions } from 'ioredis';
+import  Redis from '../utils/redis'
 
-const connection: RedisOptions ={
-    host:'localhost',
-    port:6379
+export const orderQueue = new Queue('orderQueue', {connection: Redis});
+
+export async function addOrderToQueue(order:any){
+    try{
+        await orderQueue.add('newOrder', order);
+        console.log('Order added to queue: ', order);
+    }catch(err){
+        console.error('Failed to add order to queue: ', err);
+    }
 }
-
-export const orderQueue = new Queue('orderQueue', {connection});

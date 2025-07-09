@@ -1,4 +1,4 @@
-import express, {Request, Response} from 'express';
+import express, {NextFunction, Request, Response} from 'express';
 import {Product} from '../models/Product';
 import {authenticateJWT} from '../../../../shared/middleware/authMiddleware'
 import redis from '../utils/redis'
@@ -10,7 +10,7 @@ import {} from '../../../../shared/types/custom'
 const router = express.Router();
 const stripe = new Stripe('sk_test_...');
 
-// now adding a job to queue
+// now adding a job to queue    
 router.post('/place-order', async(req, res)=>{
     const orderData = req.body;
     await orderQueue.add('send-receipts', orderData);
@@ -18,15 +18,34 @@ router.post('/place-order', async(req, res)=>{
     res.json({message:'Order received, processing... '});
 })
 
-router.post('/create-product', authenticateJWT ,upload.single('image') ,async(req:Request, res:Response)=>{
+router.post('/create-product', authenticateJWT ,
+    (req, res, next) => {
+    console.log('Auth passed, before multer upload');
+    next();
+  },
+    upload.single('image') ,
+    (req, res, next) => {
+    console.log('After multer upload');
+    next();
+  },
+    async(req:Request, res:Response, nxt:NextFunction)=>{
+        console.log('In route handler');
     try{
         if (req.user?.role !== 'admin') {
-            res.status(403).json({ message: 'Forbidden' });
+            res.status(403).json({ message: 'Access denied: Admins only' });
             return;
         }
-        const image = req.file?.path;
-        const productData = {...req.body, image};
-        console.log(image, 'image coming undefined')
+        if (!req.file) {
+            res.status(400).json({ message: 'Image upload failed or missing' });
+            return;
+        }
+
+        console.log('FILE:', req.file);
+        console.log('BODY:', req.body);
+        const imageUrl = req.file.path;
+
+        const productData = {...req.body, image:imageUrl, createdBy:req.user.id};
+        console.log('Incoming product data', productData.image)
         const newProduct = new Product(productData);
         await newProduct.save();
 
@@ -35,8 +54,7 @@ router.post('/create-product', authenticateJWT ,upload.single('image') ,async(re
         res.status(201).json(newProduct);   
 
     }catch(err){
-        console.log('Create product err', err);
-        res.status(400).json({err:"Product creation failed"});
+        nxt(err);
     }
 })
 
@@ -75,7 +93,6 @@ router.post(
     authenticateJWT,
     upload.single('image'),
     async (req, res)=>{
-        
         req.user?.role !== 'admin'?  res.status(403).json({message:'fordbidden'}) : res.status(403).json({message:'Access granted!'});
         const imageurl = req.file?.path;
         res.json({imageurl});

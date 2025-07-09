@@ -11,7 +11,7 @@ export const authenticateJWT = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer")) {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Missing or invalid Authorization header" });
     return;
   }
 
@@ -34,6 +34,9 @@ export const authenticateJWT = (
       throw new Error("Invalid token payload");
     }
   } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
+     res.status(403).json({
+      message: "Invalid token",
+      error: err instanceof Error ? err.message : String(err),
+    });
   }
 };

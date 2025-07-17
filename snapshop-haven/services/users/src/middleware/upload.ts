@@ -1,22 +1,11 @@
-import express from 'express'
 import multer from 'multer'
-import fs from 'fs'
-import * as path from 'path'
 
-const app = express()
+// the normal disk storage
 
-// multer storage //
-
-const uploadDir = path.join(process.cwd(), 'uploads');
 const storage = multer.diskStorage({
-  destination : (req, file, cb) => {
-    fs.mkdirSync(uploadDir, {recursive:true});
-    cb(null, uploadDir)
-  },
-  filename:(req, file, cb) => {
-    cb(null, `${file.originalname}`)
-  }
-})
+  destination: (req, file, cb) => cb(null, 'uploads/'),
+  filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
+});
 
 const upload = multer({storage});
 export default upload;
